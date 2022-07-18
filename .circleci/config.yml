@@ -194,7 +194,7 @@ jobs:
             pwd
             cd .circleci/ansible
             ansible-playbook -i inventory.txt configure-server.yml
-      - destroy_environment # Here's where you will add some code to rollback on failure
+      # Here's where you will add some code to rollback on failure
       
 
       # Get backend url
