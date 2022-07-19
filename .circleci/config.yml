@@ -137,32 +137,32 @@ jobs:
       - run:
           name: Install tar gzip
           command: |
-            yum install -y tar gzip
+            # yum install -y tar gzip
       - run:
           name: Ensure backend infrastructure exists
           command: |
-            aws cloudformation deploy \
-              --template-file .circleci/files/backend.yml \
-              --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
-              --tags project=udapeople \
-              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
+            # aws cloudformation deploy \
+            #   --template-file .circleci/files/backend.yml \
+            #   --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+            #   --tags project=udapeople \
+            #   --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
       - run:
           name: Ensure frontend infrastructure exist
           command: |
-            aws cloudformation deploy \
-              --template-file .circleci/files/frontend.yml \
-              --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
-              --tags project=udapeople \
-              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
+            # aws cloudformation deploy \
+            #   --template-file .circleci/files/frontend.yml \
+            #   --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
+            #   --tags project=udapeople \
+            #   --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
       - run:
           name: Add backend ip to ansible inventory
           command: |
-            BACKEND_PUBLIC_IP=$(aws ec2 describe-instances \
-              --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
-              --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --output text) 
-              echo BACKEND_PUBLIC_IP >> .circleci/ansible/inventory.txt
-              cat .circleci/ansible/inventory.txt
+            # BACKEND_PUBLIC_IP=$(aws ec2 describe-instances \
+            #   --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+            #   --query 'Reservations[*].Instances[*].PublicIpAddress' \
+            #   --output text) 
+            #   echo BACKEND_PUBLIC_IP >> .circleci/ansible/inventory.txt
+            #   cat .circleci/ansible/inventory.txt
       - persist_to_workspace:
           root: ~/
           paths:
@@ -182,7 +182,7 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update ansible tar gzip openssh
-            # apk add --update nodejs ansible tar npm  curl gzip  aws-cli
+            apk add --update nodejs npm pm2
       - run: pip install awscli
       - run:
           name: confirm inventory ip addreess
