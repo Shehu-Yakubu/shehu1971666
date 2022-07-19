@@ -183,7 +183,9 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update ansible tar gzip openssh
+            apk add --update python3
+            apk add --update && app add --upgrade
+            apk add --update ansible tar gzip nodejs npm pm2 openssh
       - run: pip install awscli
       - run:
           name: confirm inventory ip addreess
