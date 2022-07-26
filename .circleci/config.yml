@@ -142,18 +142,18 @@ jobs:
           name: Ensure backend infrastructure exists
           command: |
             aws cloudformation deploy \
-              # --template-file .circleci/files/backend.yml \
-              # --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
-              # --tags project=udapeople \
-              # --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
+              --template-file .circleci/files/backend.yml \
+              --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --tags project=udapeople \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
       - run:
           name: Ensure frontend infrastructure exist
           command: |
             aws cloudformation deploy \
-              # --template-file .circleci/files/frontend.yml \
-              # --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
-              # --tags project=udapeople \
-              # --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
+              --template-file .circleci/files/frontend.yml \
+              --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --tags project=udapeople \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
       - run:
           name: Add backend ip to ansible inventory
           command: |
@@ -169,29 +169,29 @@ jobs:
             - project/.circleci/ansible/inventory.txt
       # Here's where you will add some code to rollback on failure
 
-  # configure-infrastructure:
-  #   docker:
-  #     - image: python:3.7-alpine3.16
-  #   steps:
-  #     - checkout
-  #     - add_ssh_keys:
-  #         fingerprints: ["08:13:02:db:22:fd:62:9b:70:30:cd:14:e7:0c:1a:b5"]
-  #     - attach_workspace:
-  #         at: ~/
-  #     - run:
-  #         name: Install dependencies
-  #         command: |
-  #           apk add --update ansible tar gzip
-  #     - run:
-  #         name: confirm inventory ip addreess
-  #         command: |
-  #           cat ~/project/.circleci/ansible/inventory.txt
-  #     - run:
-  #         name: configure server
-  #         command: |
-  #           pwd
-  #           cd .circleci/ansible
-  #           ansible-playbook -i inventory.txt configure-server.yml
+  configure-infrastructure:
+    docker:
+      - image: python:3.7-alpine3.16
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["8c:03:8f:fa:8d:8a:73:41:37:6a:15:36:fc:6d:52:3a"]
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update ansible tar gzip
+      - run:
+          name: confirm inventory ip addreess
+          command: |
+            cat ~/project/.circleci/ansible/inventory.txt
+      - run:
+          name: configure server
+          command: |
+            pwd
+            cd .circleci/ansible
+            ansible-playbook -i inventory.txt configure-server.yml
       # Here's where you will add some code to rollback on failure 
 
       # Get backend url
@@ -340,8 +340,8 @@ workflows:
           requires: [build-frontend]
       - deploy-infrastructure:
           requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-      # - configure-infrastructure:
-      #     requires: [deploy-infrastructure]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
       # - run-migrations:
       #     requires: [configure-infrastructure]
       # - deploy-frontend:
