@@ -184,7 +184,10 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update ansible tar gzip
+            apk add --update tar
+            apk add --update gzip
+            pip install awscli
+            apk add --update ansible
       - run:
           name: confirm inventory ip addreess
           command: |
