@@ -160,9 +160,9 @@ jobs:
             aws ec2 describe-instances \
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             # --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
-            --output text >> .circleci/ansible/inventory.txt
+            --output text >> .circleci/ansible/inventory.txt \
             cat .circleci/ansible/inventory.txt
-            
+
             # BACKEND_PUBLIC_IP=$(aws ec2 describe-instances \
             #   --query 'Reservations[*].Instances[*].PublicIpAddress' \
             #   --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
@@ -176,7 +176,7 @@ jobs:
       
   configure-infrastructure:
     docker:
-      - image: python:3.7-alpine3.16
+      - image: python:3.7-alpine3.11
     steps:
       - checkout
       - add_ssh_keys:
