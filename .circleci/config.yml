@@ -167,21 +167,26 @@ jobs:
           root: ~/
           paths:
             - project/.circleci/ansible/inventory.txt
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
       # Here's where you will add some code to rollback on failure
 
   configure-infrastructure:
     docker:
-      - image: python:3.7-alpine3.16
+      # - image: python:3.7-alpine3.16
+      - image: cimg/base:stable
     steps:
       - checkout
       - add_ssh_keys:
           fingerprints: ["8c:03:8f:fa:8d:8a:73:41:37:6a:15:36:fc:6d:52:3a"]
       - attach_workspace:
           at: ~/
+      - install_aws-cli
+      - install_ansible
       - run:
           name: Install dependencies
           command: |
-            apk add --update ansible tar gzip
+            sudo apt -y install ansible tar gzip
       - run:
           name: confirm inventory ip addreess
           command: |
@@ -189,7 +194,7 @@ jobs:
       - run:
           name: configure server
           command: |
-            pwd
+            # pwd
             cd .circleci/ansible
             ansible-playbook -i inventory.txt configure-server.yml
       # Here's where you will add some code to rollback on failure 
