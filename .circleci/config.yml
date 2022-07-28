@@ -219,16 +219,16 @@ jobs:
     docker:
       - image: amazon/aws-cli
     steps:
-      - checkout
+      # - checkout
       - attach_workspace:
           at: ~/
       - run:
           name: Install dependencies
           command: |
-            yum install -y python3
-            yum install -y nodejs
-            yum install -y ansible
-            yum install -y npm
+            yum install -y python3 ansible nodejs npm
+            # yum install -y nodejs
+            # yum install -y ansible
+            # yum install -y npm
       - run:
           name: Get backend url
           command: |
