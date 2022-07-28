@@ -224,10 +224,10 @@ jobs:
           name: Install dependencies
           command: |
             yum install -y python3
-            apk install -y nodejs
-            apk install -y ansible
-            apk install -y npm
-            pip install awscli
+            yum install -y nodejs
+            yum install -y ansible
+            yum install -y npm
+            yum install awscli
       - run:
           name: Get backend url
           command: |
