@@ -37,7 +37,7 @@ commands:
           when: on_fail
           command: |
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-            SUCCESS = $(curl --insecure  https://kvdb.io/9bL3qcS3G4YhbiEwh1vnVf/migration_<< parameters.Workflow_ID >>)
+            SUCCESS=$(curl --insecure https://kvdb.io/9bL3qcS3G4YhbiEwh1vnVf/migration_<< parameters.Workflow_ID >>)
             if(( $SUCCESS==1 )); 
             then
              cd ~/project/backend
@@ -237,7 +237,8 @@ jobs:
             yum install -y nodejs
             yum install -y npm
             yum install -y ansible
-            yum install tar gzip
+            yum install -y tar
+            yum install -y gzip
             # apk add --update curl
             # apk add --update nodejs
             # apk add --update npm
