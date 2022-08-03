@@ -5,6 +5,30 @@ orbs:
   aws-cli: circleci/aws-cli@3.1.1
 
 commands:
+  notify_on_failure:
+    steps:
+      - slack/notify:
+          event: fail
+          channel: CircleCi-Behordeun
+          template: basic_fail_1
+  install_awscli:
+    description: Install AWS CLI v2
+    steps:
+      - run:
+          name: Install AWS CLI v2
+          command: |
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
+  install_ansible:
+    description: Install Ansible
+    steps:
+      - run:
+          name: Install Ansible
+          command: |
+            sudo apt update
+            sudo apt install -y python3 python3-pip
+            python3 -m pip install --user ansible
   destroy-environment:
     description: Destroy backend and front-end cloudformation stacks given a workflow ID.
     parameters:
@@ -24,7 +48,6 @@ commands:
             # Delete backend stack
             aws cloudformation delete-stack\
               --stack-name udapeople-backend-<< parameters.Workflow_ID >>
-
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
     parameters:
@@ -224,20 +247,20 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: python:3.7-alpine3.12
+      - image: amazon/aws-cli
     steps:
       - checkout
+      - run:
+          name: Install tar and gzip
+          command: |
+            yum install -y tar gzip
       - attach_workspace:
           at: ~/
       - run:
           name: Install dependencies
           command: |
-             apk add --update tar
-             apk add --update gzip
-             apk add --update nodejs
-             apk add --update npm
-             pip install awscli
-             apk add --update ansible
+            cur sL https://rpm.nodesource.com/setup_16.x | bash -
+            yum install nodejs -y
       - run:
           name: Get backend url
           command: |
@@ -257,6 +280,7 @@ jobs:
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}" tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+      - notify-on-failure
       - destroy-environment
       - revert-migrations
 
