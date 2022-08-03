@@ -224,7 +224,7 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: python:3.7-alpine3.11
+      - image: python:3.7-alpine3.12
     steps:
       - checkout
       - attach_workspace:
@@ -236,8 +236,8 @@ jobs:
              apk add --update gzip
              apk add --update nodejs
              apk add --update npm
-             apk add --update ansible
              pip install awscli
+             apk add --update ansible
       - run:
           name: Get backend url
           command: |
