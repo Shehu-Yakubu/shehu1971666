@@ -1,42 +1,48 @@
 version: 2.1
 
+orbs:
+  slack: circleci/slack@4.10.1
+  aws-cli: circleci/aws-cli@3.1.1
+
 commands:
-  destroy_environment:
+  destroy-environment:
     description: Destroy backend and front-end cloudformation stacks given a workflow ID.
-    # parameters:
-    #   stack-name:
-    #     description: |
-    #       aws cloudformation delete-stack \
-    #       --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
-    #       --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
-    #     type: string   
+    parameters:
+      Workflow_ID:
+        type: string
+        default: ${CIRCLE_WORKFLOW_ID:0:7}
     steps:
       - run:
           name: Destroy environments
           when: on_fail
           command: |
+            # Empty frontend bucket
+            aws s3 rm s3://udapeople-<<parameters.Workflow_ID>> --recursive
+            # Delete frontend stack
             aws cloudformation delete-stack \
-              --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
-            aws cloudformation delete-stack \
-              --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
+              --stack-name udapeople-frontend-<< parameters.Workflow_ID >>
+            # Delete backend stack
+            aws cloudformation delete-stack\
+              --stack-name udapeople-backend-<< parameters.Workflow_ID >>
 
-  revert_migrations:
+  revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
-    # parameters:
-      # Add parameter here     
+    parameters:
+      Workflow_ID:
+        type: string
+        default: ${CIRCLE_WORKFLOW_ID:0:7}
     steps:
       - run:
           name: Revert migrations
-          # when: 
+          when: on_fail
           command: |
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-            SUCCESS = 1
+            SUCCESS = $(curl --insecure  https://kvdb.io/9bL3qcS3G4YhbiEwh1vnVf/migration_<< parameters.Workflow_ID >>)
             if(( $SUCCESS==1 )); 
             then
-            #  cd ~/project/backend
-            #  npm install
-            #  Add revert code here. You can find this in the Getting Started section.
-              exit 1
+             cd ~/project/backend
+             npm install
+             npm run migration:revert
             fi
             
 jobs:
@@ -194,6 +200,7 @@ jobs:
           command: |
             cd .circleci/ansible
             ansible-playbook -i inventory.txt configure-server.yml
+      - destroy-environment
 
   run-migrations:
     docker:
@@ -217,18 +224,24 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: amazon/aws-cli
+      # - image: amazon/aws-cli
+      - image: python3.9.1-alpine3.12
     steps:
+      - checkout
       - attach_workspace:
           at: ~/
       - run:
           name: Install dependencies
           command: |
-            yum install -y python3
-            yum install -y nodejs
-            yum install -y npm
-            yum install -y ansible
-            yum install tar gzip
+            apk add --update curl
+            apk add --update nodejs
+            apk add --update npm
+            apk add --update ansible
+            # yum install -y python3
+            # yum install -y nodejs
+            # yum install -y npm
+            # yum install -y ansible
+            # yum install tar gzip
       - run:
           name: Get backend url
           command: |
@@ -248,8 +261,8 @@ jobs:
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}" tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
-      # - destroy_environment
-      # - revert_migrations
+      - destroy-environment
+      - revert-migrations
 
 #   deploy-backend:
 #     docker:
