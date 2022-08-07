@@ -328,15 +328,18 @@ jobs:
           command: |
             apk add --update curl nodejs npm
             pip3 install awscli
+      # - run:
+      #     name: Get backend url
+      #     command: |
+      #       export BACKEND_IP=$(cat ~/backend_ip.txt)
+      #       export API_URL="http://${BACKEND_IP}:3030"
+      #       echo "${API_URL}"
       - run:
-          name: Get backend url
+          name: Backend smoke test.
           command: |
             export BACKEND_IP=$(cat ~/backend_ip.txt)
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
-      - run:
-          name: Backend smoke test.
-          command: |
             if curl "${API_URL}/api/status" | grep "ok"
             then
                 return 0
