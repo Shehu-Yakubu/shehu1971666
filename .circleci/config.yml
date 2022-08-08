@@ -342,14 +342,11 @@ jobs:
           name: Get backend url
           command: |
             export BACKEND_IP=$(cat ~/backend_ip.txt)
-            export API_URL="http://${BACKEND_IP}:3030"
-            echo "${API_URL}"
       - run:
           name: Backend smoke test.
           command: |
-            # export BACKEND_IP=$(cat ~/backend_ip.txt)
-            # export API_URL="http://${BACKEND_IP}:3030"
-            # echo "${API_URL}"
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo "${API_URL}"
             if curl "${API_URL}/api/status" | grep "ok"
             then
                 return 0
